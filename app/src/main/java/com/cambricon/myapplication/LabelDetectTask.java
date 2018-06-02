@@ -14,32 +14,18 @@ import org.json.JSONObject;
  * Created by xiaoxiao on 18-6-1.
  */
 
-public class LabelDetectTask extends AsyncTask{
+public class LabelDetectTask extends AsyncTask {
     private static final String LOG_TAG = "label_detect";
     private MMListener listener;
     private long startTime;
     private long endTime;
 
     LabelDetector labelDetector;
+
     public LabelDetectTask(MMListener listener) {
         this.listener = listener;
     }
 
-
-    @Override
-    protected Label doInBackground(Bitmap...bmp) {
-        Log.i(LOG_TAG, "init LabelDetector");
-        labelDetector = new LabelDetector((Context)listener);
-
-        Log.i(LOG_TAG, "start to get label");
-        startTime = System.currentTimeMillis();
-        Label result_label = getLabel(bmp[0]);
-        endTime = System.currentTimeMillis();
-        Log.i(LOG_TAG, String.format("labeldetect whole time: %d ms", endTime - startTime));
-        //release engine after detect finished
-        labelDetector.release();
-        return result_label;
-    }
 
     private Label getLabel(Bitmap bitmap) {
         if (bitmap == null) {
@@ -59,5 +45,24 @@ public class LabelDetectTask extends AsyncTask{
     }
 
 
+    @Override
+    protected Object doInBackground(Object[] objects) {
+        Log.i(LOG_TAG, "init LabelDetector");
+        labelDetector = new LabelDetector((Context)listener);
+
+        Log.i(LOG_TAG, "start to get label");
+        startTime = System.currentTimeMillis();
+        Label result_label = getLabel([0]);
+        endTime = System.currentTimeMillis();
+        Log.i(LOG_TAG, String.format("labeldetect whole time: %d ms", endTime - startTime));
+        //release engine after detect finished
+        labelDetector.release();
+        return result_label;
+    }
 }
+
+
+
+
+
 

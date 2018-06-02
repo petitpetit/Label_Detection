@@ -31,11 +31,11 @@ import com.huawei.hiai.vision.visionkit.image.detector.LabelContent;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
-
-
-import com.huawei.hiai.vision.visionkit.image.detector.Label;
 
 public class MainActivity extends AppCompatActivity implements MMListener{
     private static final String LOG_TAG = "label_detect";
@@ -176,54 +176,11 @@ public class MainActivity extends AppCompatActivity implements MMListener{
         LABEL_CONTENTS.put(125,"guitar");
     }
 
-
-
-
-    @Override
-    public void onTaskCompleted(Label label) {
-        ivImage.setImageBitmap(bmp);
-
-        if (label == null){
-            tvLabel.setText("not get label");
-        }else {
-            String strLabel = "category:";
-            int categoryID = label.getCategory();
-            if (categoryID<0||categoryID>=LABEL_CATEGORYS.length){
-                strLabel += "Others";
-            }else {
-                strLabel += LABEL_CATEGORYS[categoryID];
-            }
-            strLabel += ", probability: " + String.valueOf(label.getCategoryProbability()) + "\n";
-
-            ListlabelContents = label.getLabelContent();
-            for (LabelContent labelContent : labelContents) {
-                strLabel += "labelContent: ";
-                int labelContentID = labelContent.getLabelId();
-                String name = LABEL_CONTENTS.get(labelContentID);
-                if (name == null) {
-                    strLabel += "other";
-                } else {
-                    strLabel += name;
-                }
-                strLabel += ", probability: " + String.valueOf(labelContent.getProbability()) + "\n";
-            }
-            tvLabel.setText(strLabel);
-        }
-
-        btnTake.setEnabled(true);
-        btnSelect.setEnabled(true);
-
-        if (dialog != null) {
-            dialog.dismiss();
-        }
-    }
-        }
-
-    }
-
     private Uri fileUri;
     private Bitmap bmp;
     private ProgressDialog dialog;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements MMListener{
         });
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode == REQUEST_IMAGE_TAKE || requestCode == REQUEST_IMAGE_SELECT) && resultCode == RESULT_OK) {
@@ -304,6 +263,44 @@ public class MainActivity extends AppCompatActivity implements MMListener{
 
     }
 
+    @Override
+    public void onTaskCompleted(Label label) {
+        ivImage.setImageBitmap(bmp);
+
+        if (label == null){
+            tvLabel.setText("not get label");
+        }else {
+            String strLabel = "category:";
+            int categoryID = label.getCategory();
+            if (categoryID<0||categoryID>=LABEL_CATEGORYS.length){
+                strLabel += "Others";
+            }else {
+                strLabel += LABEL_CATEGORYS[categoryID];
+            }
+            strLabel += ", probability: " + String.valueOf(label.getCategoryProbability()) + "\n";
+
+            List<LabelContent> labelContents = label.getLabelContent();
+            for (LabelContent labelContent: labelContents){
+                strLabel += "labelContent: ";
+                int labelContentID = labelContent.getLabelId();
+                String name = (String) LABEL_CONTENTS.get(labelContentID);
+                if (name == null) {
+                    strLabel += "other";
+                } else {
+                    strLabel += name;
+                }
+                strLabel += ", probability: " + String.valueOf(labelContent.getProbability()) + "\n";
+            }
+            tvLabel.setText(strLabel);
+        }
+
+        btnTake.setEnabled(true);
+        btnSelect.setEnabled(true);
+
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+    }
     private void checkCameraPermission(){
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)
